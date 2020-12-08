@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { createStructuredSelector } from 'reselect';
+import ErrorBoundary from './components/error-boundary/error-boundary.component';
 import Header from './components/header/header.component';
 import Spinner from './components/spinner/spinner.component';
 import { GlobalStyle } from './global.styles';
@@ -23,24 +24,26 @@ const App = ({ checkUserSession, currentUser }) => {
     <div>
       <GlobalStyle />
       <Header />
-      <Suspense fallback={<Spinner />}>
-        <Switch>
-          <Route exact path='/' component={HomePage} />
-          <Route path='/shop' component={ShopPage} />
-          <Route exact path='/checkout' component={CheckoutPage} />
-          <Route
-            exact
-            path='/signin'
-            render={() =>
-              currentUser ? (
-                <Redirect to='/' />
-              ) : (
-                  <SignInAndSignUpPage />
-                )
-            }
-          />
-        </Switch>
-      </Suspense>
+        <ErrorBoundary>
+          <Switch>
+            <Suspense fallback={<Spinner />}>
+              <Route exact path='/' component={HomePage} />
+              <Route path='/shop' component={ShopPage} />
+              <Route exact path='/checkout' component={CheckoutPage} />
+              <Route
+                exact
+                path='/signin'
+                render={() =>
+                  currentUser ? (
+                    <Redirect to='/' />
+                  ) : (
+                      <SignInAndSignUpPage />
+                    )
+                }
+              />
+            </Suspense>
+          </Switch>
+        </ErrorBoundary>
     </div>
   );
 }
